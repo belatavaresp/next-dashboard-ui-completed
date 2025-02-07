@@ -1,7 +1,27 @@
+import LoginForm from "@/components/forms/LoginForm";
+import Image from "next/image";
+
 const LoginPage = () => {
   return (
-    <div className=''>LoginPage</div>
-  )
-}
+    <div className="flex h-screen">
+      <div className="relative hidden lg:flex w-1/2 items-center justify-center pl-8">
+        <div className="">
+          <Image
+            src="/login_background.png"
+            alt="Crianças montando robôs"
+            fill={true}
+            className=""
+            objectFit="cover"
+            quality={100}
+          />
+        </div>
+      </div>
 
-export default LoginPage
+      <div className="flex w-full lg:w-1/2 items-center justify-center bg-white p-8">
+        <LoginForm />
+      </div>
+    </div>
+  );
+};
+
+export default LoginPage;
