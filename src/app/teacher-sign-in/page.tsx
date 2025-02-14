@@ -7,8 +7,8 @@ const LoginPage = () => {
       <div className="relative hidden lg:flex w-1/2 items-center justify-center pl-8">
         <div className="">
           <Image
-            src="/login_background.png"
-            alt="Crianças montando robôs"
+            src="/teacher-login.png"
+            alt="Professor e crianças montando robôs"
             fill={true}
             className=""
             objectFit="cover"

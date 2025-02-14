@@ -1,8 +1,12 @@
+"use client";
+
+import { useState } from "react";
 import FormModal from "@/components/FormModal";
+import SignupForm from "@/components/forms/SignupForm"; // Importa o formulário de cadastro
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role, studentsData } from "@/lib/data";
+import { studentsData } from "@/lib/data";
 import Image from "next/image";
 
 type Student = {
@@ -39,6 +43,8 @@ const columns = [
 ];
 
 const StudentListPage = () => {
+  const [showFormModal, setShowFormModal] = useState(false); // Estado para controlar o modal
+
   const renderRow = (item: Student) => (
     <tr
       key={item.id}
@@ -63,12 +69,9 @@ const StudentListPage = () => {
       <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
-          {role === "admin" && (
-            // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            //   <Image src="/delete.png" alt="" width={16} height={16} />
-            // </button>
+          {/* {role === "admin" && (
             <FormModal table="student" type="delete" id={item.id}/>
-          )}
+          )} */}
         </div>
       </td>
     </tr>
@@ -88,19 +91,22 @@ const StudentListPage = () => {
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-tlpLightGreen">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {role === "admin" && (
-              // <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              //   <Image src="/plus.png" alt="" width={14} height={14} />
-              // </button>
-              <FormModal table="student" type="create"/>
-            )}
+            <button
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-tlpLightGreen"
+              onClick={() => setShowFormModal(true)}
+            >
+              <Image src="/create.png" alt="Adicionar usuário" width={14} height={14} />
+            </button>
           </div>
         </div>
       </div>
+
       {/* LIST */}
       <Table columns={columns} renderRow={renderRow} data={studentsData} />
       {/* PAGINATION */}
       <Pagination />
+
+      {showFormModal && <SignupForm onClose={() => setShowFormModal(false)} />}
     </div>
   );
 };
