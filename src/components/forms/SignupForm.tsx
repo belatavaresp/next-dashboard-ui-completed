@@ -7,22 +7,32 @@ interface UserFormProps {
 
 export default function SignupForm({ onClose }: UserFormProps) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [institution, setInstitution] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log(`nome:${name} \n email:${email} \n senha:${password} \n confirm:${confirmPassword}`)
+    console.log(`nome:${name} \n nick:${nickname} \n institution:${institution} \n senha:${password} \n confirm:${confirmPassword}`)
     e.preventDefault();
     try {
-      await tleLogin.post("/user/criarUser", {
-        name,
-        email,
-        password,
-        confirmPassword,
-      });
+      await tleLogin.post(
+        "/user/criarUser",
+        {
+          name,
+          nickname,
+          institution,
+          password,
+          confirmPassword,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       alert("Usuário cadastrado com sucesso!");
-      onClose(); // Fecha o formulário
+      onClose();
     } catch (error) {
       console.error("Erro ao cadastrar usuário:", error);
       alert("Erro ao cadastrar usuário.");
@@ -42,10 +52,17 @@ export default function SignupForm({ onClose }: UserFormProps) {
             className="border p-2 rounded-md"
           />
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            placeholder="Nickname"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
+            className="border p-2 rounded-md"
+          />
+          <input
+            type="text"
+            placeholder="Instituição"
+            value={institution}
+            onChange={(e) => setInstitution(e.target.value)}
             className="border p-2 rounded-md"
           />
           <input

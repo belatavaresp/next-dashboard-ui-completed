@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import FormModal from "@/components/FormModal";
 import SignupForm from "@/components/forms/SignupForm"; // Importa o formulário de cadastro
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";

@@ -1,16 +1,41 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import tleLogin from "@/services/apiServices";
 import Link from "next/link";
 import Image from "next/image";
 
 const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  // Função para processar login
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      console.log(`Nick:${nickname} \n senha:${password}`)
+      const response = await tleLogin.post("/user/loginUser", {
+        nickname,
+        password,
+      });
+      if (response.data.success) {
+        router.push("/student"); // Redireciona para /student
+      } else {
+        setError(response.data.message || "Credenciais inválidas. Tente novamente.");
+      }
+    } catch (err) {
+      setError("Erro ao conectar com o servidor. Tente novamente mais tarde.");
+    }
+  };
+
   return (
     <div className="w-full max-w-sm">
       <div className="mb-4 flex flex-col items-start">
-        <Image
-          src="/logo_tlp.png"
-          alt="Logo TLE-Lab"
-          width={150}
-          height={150}
-        />
+        <Image src="/logo_tlp.png" alt="Logo TLE-Lab" width={150} height={150} />
       </div>
 
       <div className="mb-6">
@@ -18,24 +43,46 @@ const LoginForm = () => {
         <p className="text-gray-500">Uma plataforma por The Life Education</p>
       </div>
 
-      <form>
+      <form onSubmit={handleLogin}>
         <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">Email</label>
+          <label className="mb-2 block text-sm font-medium text-gray-700">Usuário</label>
           <input
-            type="email"
-            placeholder="mail@abc.com"
+            type="text"
+            placeholder="Nome de usuário"
+            value={nickname}
+            onChange={(e) => setNickname(e.target.value)}
             className="w-full rounded-lg border px-4 py-2 focus:border-[#12960b] focus:outline-none"
+            required
           />
         </div>
 
         <div className="mb-4">
           <label className="mb-2 block text-sm font-medium text-gray-700">Senha</label>
-          <input
-            type="password"
-            placeholder="********"
-            className="w-full rounded-lg border px-4 py-2 focus:border-[#12960b] focus:outline-none"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="********"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg border px-4 py-2 pr-10 focus:border-[#12960b] focus:outline-none"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+            >
+              <Image
+                src={showPassword ? "/closedEye.png" : "/openEye.png"}
+                alt="Toggle password visibility"
+                width={20}
+                height={20}
+              />
+            </button>
+          </div>
         </div>
+
+        {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 
         <div className="mb-4 flex items-center justify-between">
           <label className="flex items-center text-sm text-gray-700">
@@ -46,13 +93,19 @@ const LoginForm = () => {
           </Link>
         </div>
 
-        <button className="w-full rounded-lg bg-[#1adf0e] px-4 py-2 text-white hover:bg-[#12960b]">
+        <button
+          type="submit"
+          className="w-full rounded-lg bg-[#1adf0e] px-4 py-2 text-white hover:bg-[#12960b]"
+        >
           Login
         </button>
       </form>
 
       <div className="mt-6 text-center text-sm text-gray-600">
-        Não foi cadastrado? <Link href="#" className="text-[#12960b] hover:underline">Entrar em contato</Link>
+        Não foi cadastrado?{" "}
+        <Link href="#" className="text-[#12960b] hover:underline">
+          Entrar em contato
+        </Link>
       </div>
     </div>
   );
