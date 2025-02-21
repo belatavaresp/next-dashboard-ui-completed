@@ -23,7 +23,7 @@ const LoginForm = () => {
         password,
       });
       if (response.data.success) {
-        router.push("/student"); // Redireciona para /student
+        router.push("/student-6"); // Redireciona para /student-{class} tem que add isso aqui no banco
       } else {
         setError(response.data.message || "Credenciais inválidas. Tente novamente.");
       }

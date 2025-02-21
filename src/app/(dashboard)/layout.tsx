@@ -1,4 +1,3 @@
-import Menu from "@/components/Menu";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,20 +8,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-screen flex">
-      {/* LEFT */}
-      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%] p-4">
-        <Link
-          href="/"
-          className="flex items-center justify-center lg:justify-start gap-2"
-        >
-          <Image src="/logo_tlp.png" alt="logo" width={160} height={20} />
+    <div className="h-screen flex flex-col">
+      {/* NAVBAR */}
+      <div className="flex items-center justify-between py-2 px-4">
+        {/* Logo on the upper left */}
+        <Link href="/" className="flex items-center">
+          <Image src="/logo_tlp.png" alt="logo" width={130} height={10} />
         </Link>
-        <Menu />
-      </div>
-      {/* RIGHT */}
-      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F7F7] overflow-scroll flex flex-col">
+        {/* Navbar */}
         <Navbar />
+      </div>
+
+      {/* PAGE CONTENT */}
+      <div className="flex-1 overflow-scroll bg-[#F7F7F7]">
         {children}
       </div>
     </div>
