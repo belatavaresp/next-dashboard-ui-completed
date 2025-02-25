@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import tleLogin from "@/services/apiServices";
 import Link from "next/link";
 import Image from "next/image";
+import Cookies from "js-cookie"; // Add this for handling cookies
 
 interface LoginFormProps {
   redirectPath: string; // Path to redirect upon successful login
@@ -18,39 +19,40 @@ const LoginForm: React.FC<LoginFormProps> = ({ redirectPath, requiredRole }) => 
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // Função para processar login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log(`Nick:${nickname} \n senha:${password}`);
-      const response = await tleLogin.post("/user/loginUser", {
-        nickname,
-        password,
-      });
-
+      const response = await tleLogin.post("/user/loginUser", { nickname, password });
+  
       if (response.data.success) {
         const user = response.data.user;
-        console.log(`Nick:${user.role}`)
         
         // Check if user has the correct role
         if (user.role !== requiredRole) {
           setError("Acesso negado. Você não tem permissão para acessar esta página.");
           return;
         }
-
-        // Handle student case where class[0] should be included in the redirect path
-        if (user.role === 0) {
-          router.push(`/student-${user.Class[0]}`);
-        } else {
-          router.push(redirectPath);
-        }
+  
+        // Store authentication token in HTTP-only cookie (handled server-side)
+        Cookies.set("authToken", response.data.token, { expires: 1, secure: true });
+        console.log(`Cookies set`);
+  
+        // Use a small delay before redirecting to allow the browser to save the cookie
+        setTimeout(() => {
+          // Redirect user based on role
+          if (user.role === 0) {
+            router.push(`/student-${user.Class[0]}`);
+          } else {
+            router.push(redirectPath);
+          }
+        }, 900);  // Delay to ensure the cookie is available
       } else {
         setError(response.data.message || "Credenciais inválidas. Tente novamente.");
       }
     } catch (err) {
       setError("Erro ao conectar com o servidor. Tente novamente mais tarde.");
     }
-  };
+  };  
 
   return (
     <div className="w-full max-w-sm">
@@ -103,15 +105,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ redirectPath, requiredRole }) => 
         </div>
 
         {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
-
-        <div className="mb-4 flex items-center justify-between">
-          <label className="flex items-center text-sm text-gray-700">
-            <input type="checkbox" className="mr-2" /> Lembrar de mim
-          </label>
-          <Link href="#" className="text-sm text-[#12960b] hover:underline">
-            Esqueci minha senha
-          </Link>
-        </div>
 
         <button
           type="submit"
