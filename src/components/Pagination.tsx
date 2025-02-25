@@ -50,7 +50,7 @@ const Pagination = ({
         className="py-2 px-4 rounded-md bg-zinc-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handlePrevPage}
       >
-        Prev
+        Anterior
       </button>
       <div className="flex items-center gap-2 text-sm">{renderPageNumbers()}</div>
       <button
@@ -58,7 +58,7 @@ const Pagination = ({
         className="py-2 px-4 rounded-md bg-zinc-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleNextPage}
       >
-        Next
+        Próximo
       </button>
     </div>
   );

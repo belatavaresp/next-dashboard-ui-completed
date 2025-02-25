@@ -6,7 +6,12 @@ import tleLogin from "@/services/apiServices";
 import Link from "next/link";
 import Image from "next/image";
 
-const LoginForm = () => {
+interface LoginFormProps {
+  redirectPath: string; // Path to redirect upon successful login
+  requiredRole: number; // Role required to access this login page (0 = student, 1 = teacher, 2 = admin)
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ redirectPath, requiredRole }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [nickname, setNickname] = useState("");
   const [password, setPassword] = useState("");
@@ -17,13 +22,28 @@ const LoginForm = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      console.log(`Nick:${nickname} \n senha:${password}`)
+      console.log(`Nick:${nickname} \n senha:${password}`);
       const response = await tleLogin.post("/user/loginUser", {
         nickname,
         password,
       });
+
       if (response.data.success) {
-        router.push("/student-6"); // Redireciona para /student-{class} tem que add isso aqui no banco
+        const user = response.data.user;
+        console.log(`Nick:${user.role}`)
+        
+        // Check if user has the correct role
+        if (user.role !== requiredRole) {
+          setError("Acesso negado. Você não tem permissão para acessar esta página.");
+          return;
+        }
+
+        // Handle student case where class[0] should be included in the redirect path
+        if (user.role === 0) {
+          router.push(`/student-${user.Class[0]}`);
+        } else {
+          router.push(redirectPath);
+        }
       } else {
         setError(response.data.message || "Credenciais inválidas. Tente novamente.");
       }

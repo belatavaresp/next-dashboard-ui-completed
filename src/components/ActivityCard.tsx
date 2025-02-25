@@ -13,7 +13,7 @@ export default function ActivityCard({ title, image, id }: ActivityCardProps) {
 
   return (
     <Link href={link}>
-      <div className="relative group w-72 h-48 rounded-lg overflow-hidden shadow-lg cursor-pointer transform transition duration-300 hover:scale-105">
+      <div className="relative group w-72 h-48 rounded-lg overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105">
         <Image
           src={image}
           alt={title}

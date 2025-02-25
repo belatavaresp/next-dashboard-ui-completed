@@ -18,7 +18,7 @@ const LoginPage = () => {
       </div>
 
       <div className="flex w-full lg:w-1/2 items-center justify-center bg-white p-8">
-        <LoginForm />
+        <LoginForm redirectPath="/admin" requiredRole={2} />
       </div>
     </div>
   );

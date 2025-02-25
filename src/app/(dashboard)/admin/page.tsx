@@ -13,16 +13,19 @@ type User = {
   name: string;
   nickname: string;
   institution: string;
-  role: string;
+  role: number;  // role will be a number, we will convert it to a string
   password: string;
   confirmPassword: string;
+  Class: string[]; // Class field is an array of strings
 };
+
 
 const columns = [
   { header: "Info", accessor: "info" },
   { header: "Username", accessor: "nickname", className: "hidden md:table-cell" },
   { header: "Instituição", accessor: "institution", className: "hidden md:table-cell" },
   { header: "Papel", accessor: "role", className: "hidden md:table-cell" },
+  { header: "Classe", accessor: "Class", className: "hidden md:table-cell" }, // Add the Class column
   { header: "Ações", accessor: "action" },
 ];
 
@@ -62,13 +65,16 @@ const AdminPage = () => {
 
   const handleDelete = async (nickname: string) => {
     try {
-      const response = await tleLogin.post("/user/deletarUser", { nickname });
+      // Change POST to DELETE method
+      const response = await tleLogin.delete("/user/deletarUser", { data: { nickname } });
+
       if (response.status === 200) {
         alert("Usuário deletado com sucesso");
+        // Filter out the deleted user from the list
         setUsers(users.filter(user => user.nickname !== nickname));
       }
     } catch (error) {
-      console.error("Erro ao deletar usuário:", error);
+      console.error("Erro ao deletar usuário:");
       alert("Ocorreu um erro ao deletar o usuário");
     }
   };
@@ -76,6 +82,12 @@ const AdminPage = () => {
   const handleEdit = (user: User) => {
     setSelectedUser(user);
     setShowUpdateModal(true);
+  };
+
+  const roleMap: { [key: number]: string } = {
+    0: "Aluno",
+    1: "Professor",
+    2: "Admin",
   };
 
   // Filter users based solely on user.name
@@ -99,7 +111,8 @@ const AdminPage = () => {
       </td>
       <td className="hidden md:table-cell">{user.nickname}</td>
       <td className="hidden md:table-cell">{user.institution}</td>
-      <td className="hidden md:table-cell">{user.role}</td>
+      <td className="hidden md:table-cell">{roleMap[user.role as keyof typeof roleMap]}</td> {/* Convert role number to string */}
+      <td className="hidden md:table-cell">{user.Class.join(", ")}</td> {/* Display classes */}
       <td>
         <div className="flex items-center gap-2">
           <button className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-300" onClick={() => handleEdit(user)}>
