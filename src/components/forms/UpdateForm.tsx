@@ -7,7 +7,7 @@ interface UpdateFormProps {
     nickname: string;
     institution: string;
     role: number;
-    Class: string[]; // userClass should always be an array
+    Class: string[];
   };
   onClose: () => void;
 }
@@ -17,7 +17,7 @@ export default function UpdateForm({ user, onClose }: UpdateFormProps) {
   const [nickname, setNickname] = useState(user.nickname);
   const [institution, setInstitution] = useState(user.institution);
   const [role, setRole] = useState<number>(user.role);
-  const [userClass, setUserClass] = useState<string[]>(user.Class || []); // Ensure userClass is an array
+  const [userClass, setUserClass] = useState<string[]>(user.Class || []);
   const [currentClass, setCurrentClass] = useState("");
 
   const roleMap: { [key: string]: number } = {
@@ -42,13 +42,12 @@ export default function UpdateForm({ user, onClose }: UpdateFormProps) {
 
     try {
       await tleLogin.post(
-        `/user/editarUser/${user.nickname}`,
+        `/user/editarUser/`,
         {
           name,
           nickname,
           institution,
           role,
-          userClass, // User classes
         },
         {
           headers: {
@@ -74,13 +73,6 @@ export default function UpdateForm({ user, onClose }: UpdateFormProps) {
             placeholder="Nome"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="border p-2 rounded-md"
-          />
-          <input
-            type="text"
-            placeholder="Nickname"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
             className="border p-2 rounded-md"
           />
           <input
@@ -111,46 +103,6 @@ export default function UpdateForm({ user, onClose }: UpdateFormProps) {
               ))}
             </div>
           </div>
-
-          {/* Campo para adicionar Classes */}
-          <div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Adicionar classe"
-                value={currentClass}
-                onChange={(e) => setCurrentClass(e.target.value)}
-                className="border p-2 rounded-md flex-1"
-              />
-              <button
-                type="button"
-                onClick={addClass}
-                className="bg-zinc-200 text-zinc-500 p-2 rounded-md"
-              >
-                Adicionar
-              </button>
-            </div>
-
-            {/* Lista de Classes adicionadas */}
-            <ul className="mt-2">
-              {userClass.map((cls, index) => (
-                <li
-                  key={index}
-                  className="border p-1 rounded-md mt-1 flex justify-between items-center"
-                >
-                  {cls}
-                  <button
-                    type="button"
-                    onClick={() => removeClass(index)}
-                    className="text-red-500 text-sm"
-                  >
-                    Remover
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           <div className="flex justify-end gap-2">
             <button
               type="button"

@@ -60,4 +60,64 @@ export const activitiesData = [
       image: "/robo de servico.png",
       class: 6,
     },
+    {
+      id: 7,
+      name: "Revisão",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1BHHIZI-6RpVdKqsFhpcmGjavVsu7wjHN/preview",
+        guide: "https://drive.google.com/file/d/1F3DIsxe5wZVbjKapdyMgAQOxKdD2v1_a/preview",
+      },
+      image: "/revisao.png",
+      class: 7,
+    },
+    {
+      id: 8,
+      name: "Robô desenhista",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1FT0qFGEtWP0fCTQZ5nS091DTDzMqrjzR/preview",
+        guide: "https://drive.google.com/file/d/1cncVrAcXikwpPkt2qu7QNVtO63HY0sZu/preview",
+      },
+      image: "/robo desenhista.png",
+      class: 7,
+    },
+    {
+      id: 9,
+      name: "Terremoto",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1S2bIWwWnJgXgThhGDQLWbnJ_IvCRwzNF/preview",
+        guide: "https://drive.google.com/file/d/1186wRTzHFPw36tUs4YQ5vThM9oEh8sws/preview",
+      },
+      image: "/terremoto.png",
+      class: 7,
+    },
+    {
+      id: 10,
+      name: "Ecolocalização",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1pn3KM6FzbsEKK18-Tp7IKySvCrR11cBv/preview",
+        guide: "https://drive.google.com/file/d/15Z2i4Ngu9DpN7LtQelh3ikrXP0705r1x/preview",
+      },
+      image: "/ecolocalizacao.png",
+      class: 7,
+    },
+    {
+      id: 11,
+      name: "Luz, câmera, cores!",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1mlLo3tBo5Wk5I9HBS4mRVHRA4dN2PRHU/preview",
+        guide: "https://drive.google.com/file/d/1RtOPYHoJyRalsqWBsSI7cqL5qCq7asjg/preview",
+      },
+      image: "/luz camera cores.png",
+      class: 7,
+    },
+    {
+      id: 12,
+      name: "Robô de socorro",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1Hsa1tLKI_aiagJnCH1qudLQEz-9Ludfp/preview",
+        guide: "https://drive.google.com/file/d/1Ibiid4gXD122Um7_h1U0dKcUHx8N6JWH/preview",
+      },
+      image: "/robo de socorro.png",
+      class: 7,
+    },
   ];
