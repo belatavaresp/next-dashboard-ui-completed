@@ -120,4 +120,64 @@ export const activitiesData = [
       image: "/robo de socorro.png",
       class: 7,
     },
+    {
+      id: 13,
+      name: "Alavanca",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1usR2WIOezwyQHD32er_t8EPFubCUzrNX/preview",
+        guide: "https://drive.google.com/file/d/179PSQdeTRMjcSoWqzHdLZCkwE9YtIjFs/preview",
+      },
+      image: "/alavanca.png",
+      class: 5,
+    },
+    {
+      id: 14,
+      name: "Estruturas",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1QKu5C386RQOnQg8_nkicr8TrOTF7rt3x/preview",
+        guide: "/preview",
+      },
+      image: "/estruturas.png",
+      class: 5,
+    },
+    {
+      id: 15,
+      name: "Rodas e eixos",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1ur1dY7r51LKOnh2cv8uPh2grDRjQTzNB/preview",
+        guide: "https://drive.google.com/file/d/1HCboCQUnXMsznprioiAzlaFf-GynxOmQ/preview",
+      },
+      image: "/rodas e eixos.png",
+      class: 5,
+    },
+    {
+      id: 16,
+      name: "Roldanas",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1v50ih7L3Ja0dYU96J5ZBOqMeEOfYNymL/preview",
+        guide: "/preview",
+      },
+      image: "/roldanas.png",
+      class: 5,
+    },
+    {
+      id: 17,
+      name: "Engrenagem",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1FV00N6Mu_K4KXLM-h-1Bx3eqbP5hwihP/preview",
+        guide: "https://drive.google.com/file/d/1Q0Xq4Q5ql31gUILSP_zhHFJg8_w-YS9N/preview",
+      },
+      image: "/engrenagem.png",
+      class: 5,
+    },
+    {
+      id: 18,
+      name: "Polias",
+      pdfLinks: {
+        content: "https://drive.google.com/file/d/1oKAM8NCVLamz6aGGcjIaDsFBwSLGIiCM/preview",
+        guide: "/preview",
+      },
+      image: "/polias.png",
+      class: 5,
+    },
   ];
