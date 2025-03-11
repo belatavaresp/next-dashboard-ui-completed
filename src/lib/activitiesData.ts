@@ -135,7 +135,7 @@ export const activitiesData = [
       name: "Estruturas",
       pdfLinks: {
         content: "https://drive.google.com/file/d/1QKu5C386RQOnQg8_nkicr8TrOTF7rt3x/preview",
-        guide: "/preview",
+        guide: "https://drive.google.com/file/d/1OIJr4NHC4lUn8cTGJ6wqk0bWWj9lPJNO/preview",
       },
       image: "/estruturas.png",
       class: 5,
@@ -155,7 +155,7 @@ export const activitiesData = [
       name: "Roldanas",
       pdfLinks: {
         content: "https://drive.google.com/file/d/1v50ih7L3Ja0dYU96J5ZBOqMeEOfYNymL/preview",
-        guide: "/preview",
+        guide: "https://drive.google.com/file/d/1Og4q1wKU0sY-DJE0QFCiI2tOSHprbKoN/preview",
       },
       image: "/roldanas.png",
       class: 5,
@@ -175,7 +175,7 @@ export const activitiesData = [
       name: "Polias",
       pdfLinks: {
         content: "https://drive.google.com/file/d/1oKAM8NCVLamz6aGGcjIaDsFBwSLGIiCM/preview",
-        guide: "/preview",
+        guide: "https://drive.google.com/file/d/15s7o-KJZxAQ94z_30dYgmJOVsN3-Tz6W/preview",
       },
       image: "/polias.png",
       class: 5,
