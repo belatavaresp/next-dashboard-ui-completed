@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const tleLogin = axios.create({
-       baseURL: "http://localhost:3001/api",
+       baseURL: "https://tle-api.vercel.app/api/",
 });
 
 export default tleLogin;
