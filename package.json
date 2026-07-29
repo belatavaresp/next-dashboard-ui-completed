@@ -3,7 +3,8 @@
   "version": "0.2.0",
   "private": true,
   "engines": {
-    "node": ">=20.9.0"
+    "//": "Pinned to match .nvmrc. An open range let Vercel silently build on Node 24.",
+    "node": "22.x"
   },
   "config": {
     "mongodbMemoryServer": {
