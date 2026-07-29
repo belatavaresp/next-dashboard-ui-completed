@@ -1,12 +1,15 @@
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import Link from "next/link";
+import { getSession } from "@/lib/auth";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getSession();
+
   return (
     <div className="h-screen flex flex-col">
       {/* NAVBAR */}
@@ -16,13 +19,11 @@ export default function DashboardLayout({
           <Image src="/logo_tlp.png" alt="logo" width={130} height={10} />
         </Link>
         {/* Navbar */}
-        <Navbar />
+        <Navbar name={session?.name} role={session?.role} />
       </div>
 
       {/* PAGE CONTENT */}
-      <div className="flex-1 overflow-scroll bg-[#F7F7F7]">
-        {children}
-      </div>
+      <div className="flex-1 overflow-scroll bg-[#F7F7F7]">{children}</div>
     </div>
   );
 }

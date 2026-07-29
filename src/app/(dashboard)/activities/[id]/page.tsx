@@ -1,39 +1,60 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { activitiesData } from "@/lib/activitiesData";
-import PDFViewer from "@/components/PDFViewer";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import Link from "next/link";
+import PDFViewer from "@/components/PDFViewer";
+import { getSession } from "@/lib/auth";
+import { serializeActivity } from "@/lib/serialize";
+import {
+  canAccessActivity,
+  canSeeTeacherContent,
+  findActivityByIdOrLegacyId,
+} from "@/lib/queries";
 
-const ActivityPage = () => {
-  const { id } = useParams(); // Get the activity id from the URL
-  
-  // Find the corresponding activity from the data
-  const activity = activitiesData.find((item) => item.id.toString() === id);
+type ActivityPageProps = { params: Promise<{ id: string }> };
 
-  if (!activity) return <div>Activity not found</div>;
+export default async function ActivityPage({ params }: ActivityPageProps) {
+  const { id } = await params;
 
-  // Extract the class number from the activity (assumed it's available)
-  const classNumber = activity.class;
+  const session = await getSession();
+  if (!session) redirect("/");
+
+  const found = await findActivityByIdOrLegacyId(id);
+  if (!found) notFound();
+
+  // Old links used the integer id from the hardcoded data; send them to the
+  // canonical URL so only one shape stays in circulation.
+  if (found.matchedLegacyId) {
+    permanentRedirect(`/activities/${String(found.doc._id)}`);
+  }
+
+  const activity = serializeActivity(found.doc.toObject(), {
+    includeTeacherContent: canSeeTeacherContent(session),
+  });
+
+  if (!canAccessActivity(session, activity)) notFound();
+
+  // Prefer returning to the class the viewer actually belongs to.
+  const ownClassIds = new Set(session.classes.map((entry) => entry.id));
+  const backClass =
+    activity.classes.find((entry) => ownClassIds.has(entry.id)) ?? activity.classes[0];
+  const backHref = backClass ? `/class/${backClass.id}` : "/";
 
   return (
     <div className="container mx-auto p-6 relative">
       {/* Button to navigate back to class activity grid */}
-      <Link href={`/student-${classNumber}`} passHref>
+      <Link href={backHref} passHref>
         <button className="absolute top-4 left-4 p-2 rounded-lg bg-white shadow-md hover:bg-zinc-100 text-zinc-500">
           Voltar
         </button>
       </Link>
 
       <h1 className="text-xl font-semibold mb-4 text-center">{activity.name}</h1>
-      
+
       <PDFViewer
-        contentLink={activity.pdfLinks.content}
-        guideLink={activity.pdfLinks.guide}
-        extraLink={activity.pdfLinks.extra}
+        activityBookLink={activity.activityBook}
+        guideLink={activity.guide}
+        extraLink={activity.extra}
+        teacherGuideLink={activity.teacherGuide}
       />
     </div>
   );
-};
-
-export default ActivityPage;
+}

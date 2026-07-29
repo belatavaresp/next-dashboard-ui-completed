@@ -1,90 +1,97 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import {
+  LEGACY_SESSION_COOKIE,
+  SESSION_COOKIE,
+  verifySession,
+} from "@/lib/session";
+import type { SessionClaims } from "@/lib/types";
 
-const secret = process.env.JWT_SECRET!;
+const PUBLIC_PATHS = new Set([
+  "/",
+  "/student-sign-in",
+  "/teacher-sign-in",
+  "/adm-sign-in",
+]);
 
-interface DecodedUser {
-  role: number;
-  Class?: string[];
+/** Where each role goes when it has no better destination. */
+function homeFor(session: SessionClaims) {
+  if (session.role === "admin") return "/admin";
+  if (session.role === "teacher") return "/teacher";
+  const first = session.classes[0];
+  return first?.id ? `/class/${first.id}` : "/";
 }
 
-export async function middleware(req: NextRequest) {
-  const tokenCookie = req.cookies.get("authToken"); // Get the token from cookies
-  const pathname = req.nextUrl.pathname;
+/**
+ * Legacy URLs like /student-6 name a grade, while a class id names one
+ * institution's grade, so the target depends on who is asking.
+ */
+function resolveLegacyClassUrl(session: SessionClaims, grade: string) {
+  const matches = session.classes.filter((entry) => entry.grade === grade && entry.id);
 
-  // Allow access to homepage or login page without token
-  if (
-    pathname === "/" || 
-    pathname === "/student-sign-in" || 
-    pathname === "teacher-sign-in" || 
-    pathname === "/adm-sign-in"
-  ) {
+  if (matches.length === 1) return `/class/${matches[0].id}`;
+  // Ambiguous (same grade at two institutions) or no match: fall back to a page
+  // where the user can pick, rather than guessing.
+  return homeFor(session);
+}
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (PUBLIC_PATHS.has(pathname)) {
     return NextResponse.next();
   }
 
-  if (!tokenCookie) {
-    return NextResponse.redirect(new URL("/", req.url)); // Redirect to homepage if no token
-  }
+  const token =
+    request.cookies.get(SESSION_COOKIE)?.value ??
+    request.cookies.get(LEGACY_SESSION_COOKIE)?.value;
 
-  const token = tokenCookie.value; // Extract the string value
+  const session = token ? await verifySession(token) : null;
 
-  try {
-    // Verify the token with jose and cast the payload
-    const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
-    console.log("Decoded Payload:", payload); // Check if 'Class' exists in the payload
-
-    // Cast the payload to your custom DecodedUser type
-    const decoded = payload as unknown as DecodedUser;
-
-    const response = NextResponse.next();
-    response.headers.set('X-User-Role', String(payload.role));
-    response.headers.set('X-User-Name', String(payload.name));
-
-    // Block access to /admin for non-admins
-    if (pathname.startsWith("/admin") && decoded.role !== 2) {
-      console.log("Not an admin, redirecting...");
-      return NextResponse.redirect(new URL("/", req.url)); // Redirect if not admin
-    }
-
-    // Admins (role 2) can access everything
-    if (decoded.role === 2) return NextResponse.next();
-
-    // Protect Teacher Pages (only role 1,2 can access)
-    if (pathname.startsWith("/teacher") && decoded.role === 0) {
-      return NextResponse.redirect(new URL("/", req.url));
-    }
-
-    // Protect Student Pages (only students and teachers)
-    const studentClassMatch = pathname.match(/^\/student-(\w+)$/);
-    if (studentClassMatch) {
-      const classId = studentClassMatch[1];
-
-      if (
-        decoded.role === 0 && // Student role
-        (!decoded.Class || !decoded.Class.includes(classId)) // Ensure they belong to the correct class
-      ) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-
-      if (decoded.role !== 0 && decoded.role !== 1) {
-        return NextResponse.redirect(new URL("/", req.url));
-      }
-    }
-    
-    console.log(`response: ${response}`)
+  if (!session) {
+    const response = NextResponse.redirect(new URL("/", request.url));
+    response.cookies.delete(SESSION_COOKIE);
+    response.cookies.delete(LEGACY_SESSION_COOKIE);
     return response;
-  } catch (error) {
-    console.error("Invalid or expired token:", error);
-    return NextResponse.redirect(new URL("/", req.url)); // Redirect to homepage if token is invalid
   }
+
+  const legacyClassMatch = pathname.match(/^\/student-([\w-]+)$/);
+  if (legacyClassMatch) {
+    return NextResponse.redirect(
+      new URL(resolveLegacyClassUrl(session, legacyClassMatch[1]), request.url),
+      { status: 308 }
+    );
+  }
+
+  if (pathname.startsWith("/admin") && session.role !== "admin") {
+    return NextResponse.redirect(new URL(homeFor(session), request.url));
+  }
+
+  if (pathname.startsWith("/teacher") && session.role === "student") {
+    return NextResponse.redirect(new URL(homeFor(session), request.url));
+  }
+
+  const classMatch = pathname.match(/^\/class\/([^/]+)$/);
+  if (classMatch && session.role !== "admin") {
+    const classId = classMatch[1];
+    if (!session.classes.some((entry) => entry.id === classId)) {
+      return NextResponse.redirect(new URL(homeFor(session), request.url));
+    }
+  }
+
+  return NextResponse.next();
 }
 
-// Define which routes should be protected
 export const config = {
   matcher: [
-    "/admin", 
-    "/teacher", 
-    "/student-:path*"
+    "/admin",
+    "/admin/:path*",
+    "/teacher",
+    "/teacher/:path*",
+    "/class/:path*",
+    "/activities/:path*",
+    // Partial-segment params need a single param, not `:path*`, to match
+    // /student-6. `:path*` silently matches nothing here.
+    "/student-:grade",
   ],
 };

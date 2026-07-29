@@ -2,57 +2,52 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import tleLogin from "@/services/apiServices";
 import Link from "next/link";
 import Image from "next/image";
-import Cookies from "js-cookie"; // Add this for handling cookies
+import { api, ApiError } from "@/lib/api";
+import type { PublicUser, Role } from "@/lib/types";
 
 interface LoginFormProps {
-  redirectPath: string; // Path to redirect upon successful login
-  requiredRole: number; // Role required to access this login page (0 = student, 1 = teacher, 2 = admin)
+  /** Where to send the user after login; students always go to their class. */
+  redirectPath: string;
+  requiredRole: Role;
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ redirectPath, requiredRole }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [nickname, setNickname] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setIsSubmitting(true);
+
     try {
-      const response = await tleLogin.post("/user/loginUser", { nickname, password });
-  
-      if (response.data.success) {
-        const user = response.data.user;
-        
-        // Check if user has the correct role
-        if (user.role !== requiredRole) {
-          setError("Acesso negado. Você não tem permissão para acessar esta página.");
-          return;
-        }
-  
-        // Store authentication token in HTTP-only cookie (handled server-side)
-        Cookies.set("authToken", response.data.token, { expires: 1, secure: true });
-        console.log(`Cookies set`);
-  
-        // Use a small delay before redirecting to allow the browser to save the cookie
-        setTimeout(() => {
-          // Redirect user based on role
-          if (user.role === 0) {
-            router.push(`/student-${user.Class[0]}`);
-          } else {
-            router.push(redirectPath);
-          }
-        }, 900);  // Delay to ensure the cookie is available
-      } else {
-        setError(response.data.message || "Credenciais inválidas. Tente novamente.");
-      }
+      const { user } = await api.post<{ user: PublicUser }>("/auth/login", {
+        username,
+        password,
+        expectedRole: requiredRole,
+      });
+
+      const firstClass = user.classes.find((entry) => entry.status === "active");
+      const destination =
+        user.role === "student" && firstClass ? `/class/${firstClass.id}` : redirectPath;
+
+      router.replace(destination);
+      router.refresh();
     } catch (err) {
-      setError("Erro ao conectar com o servidor. Tente novamente mais tarde.");
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Erro ao conectar com o servidor. Tente novamente mais tarde."
+      );
+      setIsSubmitting(false);
     }
-  };  
+  };
 
   return (
     <div className="w-full max-w-sm">
@@ -71,8 +66,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ redirectPath, requiredRole }) => 
           <input
             type="text"
             placeholder="Nome de usuário"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="w-full rounded-lg border px-4 py-2 focus:border-[#12960b] focus:outline-none"
             required
           />
@@ -108,9 +103,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ redirectPath, requiredRole }) => 
 
         <button
           type="submit"
-          className="w-full rounded-lg bg-[#1adf0e] px-4 py-2 text-white hover:bg-[#12960b]"
+          disabled={isSubmitting}
+          className="w-full rounded-lg bg-[#1adf0e] px-4 py-2 text-white hover:bg-[#12960b] disabled:opacity-60"
         >
-          Login
+          {isSubmitting ? "Entrando..." : "Login"}
         </button>
       </form>
 

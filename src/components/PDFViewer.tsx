@@ -1,61 +1,60 @@
-// components/PDFViewer.tsx
+"use client";
+
 import { useState } from "react";
 
 type PDFViewerProps = {
-  contentLink: string;
+  activityBookLink?: string;
   guideLink?: string;
   extraLink?: string;
+  /** Only provided for teachers and admins. */
+  teacherGuideLink?: string;
 };
 
 const PDFViewer: React.FC<PDFViewerProps> = ({
-  contentLink,
+  activityBookLink,
   guideLink,
   extraLink,
+  teacherGuideLink,
 }) => {
-  const [currentPDF, setCurrentPDF] = useState(contentLink);
+  const embeddable = [activityBookLink, guideLink, teacherGuideLink].filter(
+    (link): link is string => Boolean(link)
+  );
+  const [currentPDF, setCurrentPDF] = useState(embeddable[0]);
 
-  const handlePDFChange = (link: string) => {
-    setCurrentPDF(link);
-  };
-
-  const handleExternalLink = (link: string) => {
-    window.open(link, "_blank"); // Open in new tab
-  };
+  const buttonClass =
+    "rounded-lg bg-white px-6 py-3 shadow-md hover:bg-zinc-100 text-zinc-500";
 
   return (
     <div className="flex flex-col items-center gap-6">
       {/* Buttons to switch between activity items */}
-      <div className="flex justify-center gap-4 mb-3">
-        <button
-          className="rounded-lg bg-white px-6 py-3 shadow-md hover:bg-zinc-100 text-zinc-500"
-          onClick={() => handlePDFChange(contentLink)}
-        >
-          Conteúdo
-        </button>
+      <div className="flex justify-center gap-4 mb-3 flex-wrap">
+        {activityBookLink && (
+          <button className={buttonClass} onClick={() => setCurrentPDF(activityBookLink)}>
+            Conteúdo
+          </button>
+        )}
         {guideLink && (
-          <button
-            className="rounded-lg bg-white px-6 py-3 shadow-md hover:bg-zinc-100 text-zinc-500"
-            onClick={() => handlePDFChange(guideLink)}
-          >
+          <button className={buttonClass} onClick={() => setCurrentPDF(guideLink)}>
             Guia de Montagem
           </button>
         )}
+        {teacherGuideLink && (
+          <button className={buttonClass} onClick={() => setCurrentPDF(teacherGuideLink)}>
+            Apoio ao professor
+          </button>
+        )}
         {extraLink && (
-          <button
-            className="rounded-lg bg-white px-6 py-3 shadow-md hover:bg-zinc-100 text-zinc-500"
-            onClick={() => handleExternalLink(extraLink)} // Open in new tab
-          >
+          <button className={buttonClass} onClick={() => window.open(extraLink, "_blank")}>
             Conteúdo extra
           </button>
         )}
       </div>
 
-    <iframe
-        src={currentPDF}
-        width="90%" // Ajuste o tamanho do PDF conforme necessário
-        height="700px"
-        title="PDF Viewer"
-    />
+      {currentPDF ? (
+        <iframe src={currentPDF} width="90%" height="700px" title="PDF Viewer" />
+      ) : (
+        <p className="text-gray-500">Nenhum material disponível para esta atividade.</p>
+      )}
     </div>
   );
 };

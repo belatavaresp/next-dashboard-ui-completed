@@ -1,18 +1,18 @@
-const Table = ({
-  columns,
-  renderRow,
-  data,
-}: {
+type TableProps<T> = {
   columns: { header: string; accessor: string; className?: string }[];
-  renderRow: (item: any) => React.ReactNode;
-  data: any[];
-}) => {
+  renderRow: (item: T) => React.ReactNode;
+  data: T[];
+};
+
+const Table = <T,>({ columns, renderRow, data }: TableProps<T>) => {
   return (
     <table className="w-full mt-4">
       <thead>
         <tr className="text-left text-zinc-400 text-sm">
           {columns.map((col) => (
-            <th key={col.accessor} className={col.className}>{col.header}</th>
+            <th key={col.accessor} className={col.className}>
+              {col.header}
+            </th>
           ))}
         </tr>
       </thead>

@@ -1,31 +1,15 @@
 const Pagination = ({
-  totalUsers,
-  usersPerPage,
+  totalItems,
+  itemsPerPage,
   currentPage,
   setCurrentPage,
 }: {
-  totalUsers: number;
-  usersPerPage: number;
+  totalItems: number;
+  itemsPerPage: number;
   currentPage: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-  const totalPages = Math.ceil(totalUsers / usersPerPage);
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
@@ -34,7 +18,7 @@ const Pagination = ({
         <button
           key={i}
           className={`px-2 rounded-sm ${currentPage === i ? "bg-lime-200" : ""}`}
-          onClick={() => handlePageChange(i)}
+          onClick={() => setCurrentPage(i)}
         >
           {i}
         </button>
@@ -48,7 +32,7 @@ const Pagination = ({
       <button
         disabled={currentPage === 1}
         className="py-2 px-4 rounded-md bg-zinc-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={handlePrevPage}
+        onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
       >
         Anterior
       </button>
@@ -56,7 +40,7 @@ const Pagination = ({
       <button
         disabled={currentPage === totalPages}
         className="py-2 px-4 rounded-md bg-zinc-200 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={handleNextPage}
+        onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
       >
         Próximo
       </button>

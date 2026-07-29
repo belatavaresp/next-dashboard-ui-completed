@@ -1,19 +1,23 @@
-import { activitiesData } from "@/lib/activitiesData"; // Assuming you already have this import
 import ActivityCard from "./ActivityCard";
+import type { PublicActivity } from "@/lib/types";
 
-export default function ActivityGrid({ classNumber }: { classNumber: number }) {
-  const filteredActivities = activitiesData.filter(
-    (activity) => activity.class === classNumber
-  );
+export default function ActivityGrid({ activities }: { activities: PublicActivity[] }) {
+  if (activities.length === 0) {
+    return (
+      <p className="p-10 text-center text-gray-500">
+        Nenhuma atividade cadastrada para esta turma ainda.
+      </p>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-16 sm:p-10">
-      {filteredActivities.map((activity, index) => (
+      {activities.map((activity) => (
         <ActivityCard
-          key={index}
+          key={activity.id}
           title={activity.name}
-          image={activity.image} // Assuming imagePath is the path to the image
-          id={activity.id.toString()} // Convert the activity id to a string
+          image={activity.cover}
+          id={activity.id}
         />
       ))}
     </div>

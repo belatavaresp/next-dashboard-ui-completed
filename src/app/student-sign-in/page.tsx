@@ -19,7 +19,7 @@ const LoginPage = () => {
 
       {/* Formulário e botão */}
       <div className="flex w-full lg:w-1/2 flex-col items-center justify-center bg-white p-8">
-        <LoginForm redirectPath="/student-sign-in" requiredRole={0} />
+        <LoginForm redirectPath="/student-sign-in" requiredRole="student" />
       </div>
     </div>
   );
