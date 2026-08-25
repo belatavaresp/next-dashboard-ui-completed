@@ -1,6 +1,8 @@
+import Image from "next/image";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
 import Link from "next/link";
 import PDFViewer from "@/components/PDFViewer";
+import Footer from "@/components/Footer";
 import { getSession } from "@/lib/auth";
 import { serializeActivity } from "@/lib/serialize";
 import {
@@ -39,22 +41,38 @@ export default async function ActivityPage({ params }: ActivityPageProps) {
   const backHref = backClass ? `/class/${backClass.id}` : "/";
 
   return (
-    <div className="container mx-auto p-6 relative">
-      {/* Button to navigate back to class activity grid */}
-      <Link href={backHref} passHref>
-        <button className="absolute top-4 left-4 p-2 rounded-lg bg-white shadow-md hover:bg-zinc-100 text-zinc-500">
-          Voltar
-        </button>
-      </Link>
+    <div className="flex min-h-full flex-col">
+      <div className="flex flex-1">
+        {/* Side decorations, stretched to span from the navbar down to the footer.
+            Hidden below the lg breakpoint where there's no room for them. */}
+        <div className="relative hidden w-[8vw] max-w-[159px] flex-none lg:block">
+          <Image src="/activity-left.svg" alt="" fill className="object-cover" />
+        </div>
 
-      <h1 className="text-xl font-semibold mb-4 text-center">{activity.name}</h1>
+        <div className="container mx-auto p-6 relative flex-1">
+          {/* Button to navigate back to class activity grid */}
+          <Link href={backHref} passHref>
+            <button className="absolute top-4 left-4 p-2 rounded-lg bg-white shadow-md hover:bg-zinc-100 text-zinc-500">
+              Voltar
+            </button>
+          </Link>
 
-      <PDFViewer
-        activityBookLink={activity.activityBook}
-        guideLink={activity.guide}
-        extraLink={activity.extra}
-        teacherGuideLink={activity.teacherGuide}
-      />
+          <h1 className="text-xl font-semibold mb-4 text-center">{activity.name}</h1>
+
+          <PDFViewer
+            activityBookLink={activity.activityBook}
+            guideLink={activity.guide}
+            extraLink={activity.extra}
+            teacherGuideLink={activity.teacherGuide}
+          />
+        </div>
+
+        <div className="relative hidden w-[8vw] max-w-[159px] flex-none lg:block">
+          <Image src="/activity-right.svg" alt="" fill className="object-cover" />
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 }

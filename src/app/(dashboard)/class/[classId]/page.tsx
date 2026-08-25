@@ -1,5 +1,7 @@
+import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import ActivityGrid from "@/components/ActivityGrid";
+import Footer from "@/components/Footer";
 import { getSession } from "@/lib/auth";
 import { getClassForSession, listActivitiesForClass } from "@/lib/queries";
 
@@ -22,16 +24,27 @@ export default async function ClassPage({ params }: ClassPageProps) {
   const activities = await listActivitiesForClass(classId);
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-4 mt-16">
-      {/* TITLE */}
-      <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-        {classDoc.name}
-      </h1>
+    <div className="flex flex-col min-h-screen">
+      <div className="flex flex-1 flex-col items-center justify-start p-4 mt-16">
+        {/* TITLE */}
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+          {classDoc.name}
+        </h1>
 
-      {/* ACTIVITY GRID */}
-      <div className="w-full flex items-center justify-center">
-        <ActivityGrid activities={activities} />
+        {/* ACTIVITY GRID */}
+        <div className="w-full flex items-center justify-center">
+          <ActivityGrid activities={activities} />
+        </div>
       </div>
+
+      <Image
+        src="/class-bottom.svg"
+        alt=""
+        width={1366}
+        height={173}
+        className="pointer-events-none w-full h-auto"
+      />
+      <Footer />
     </div>
   );
 }
